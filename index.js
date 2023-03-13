@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-// const cTable = require('console.table');
+const Table = require('cli-table');
 
 inquirer
     .prompt([
@@ -18,25 +18,46 @@ inquirer
         }
     ])
     .then((answers) => {
-        console.log(answers);
         switch (answers.mainMenu) {
             case "View all departments":
                 fetch('http://localhost:3001/api/departments')
                     .then(response => response.json())
-                    .then(error => console.error(error))
-                    .then(answers => console.table(answers));
+                    .then(data => {
+                        const table = new Table({
+                            head: ['ID', 'Department'],
+                            colWidths: [30, 100]
+                        });
+                        const tableData = data.map(obj => [obj.id, obj.department]);
+                        table.push(...tableData);
+                        console.table(table.toString());
+                    });
                 break;
             case "View all roles":
                 fetch('http://localhost:3001/api/roles')
                     .then(response => response.json())
-                    .then(error => console.error(error))
-                    .then(answers => console.log(answers));
+                    .then(data => {
+                        const table = new Table({
+                            head: ['ID', 'Role', 'Salary', 'Department'],
+                            colWidths: [10, 25, 25, 10]
+                        });
+                        const tableData = data.map(obj => [obj.id, obj.role_title, obj.role_salary, obj.department_id]);
+                        table.push(...tableData);
+                        console.log(table.toString());
+                    });
                 break;
             case "View all employees":
                 fetch('http://localhost:3001/api/employees')
                     .then(response => response.json())
-                    .then(error => console.error(error))
-                    .then(answers => console.log(answers));
+                    .then(data => {
+                        const table = new Table({
+                            head: ['ID', 'First Name', 'Last Name', 'Role'],
+                            colWidths: [10, 25, 25, 10]
+                        });
+                        console.log(data);
+                        const tableData = data.map(obj => [obj.id, obj.first_name, obj.last_name, obj.role_id]);
+                        table.push(...tableData);
+                        console.log(table.toString());
+                    });
                 break;
             case "Add a department":
                 inquirer.prompt([
@@ -98,7 +119,7 @@ inquirer
                     .then(data => {
                         const choices = data.map(result => {
                             return {
-                                name: result.role,
+                                name: result.role_title,
                                 value: result.id
                             };
                         });
@@ -121,8 +142,7 @@ inquirer
                                 choices: choices
                             }
                         ]).then((answers) => {
-                            console.log(answers)
-                            fetch('http://localhost:3001/api/role', {
+                            fetch('http://localhost:3001/api/employee', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify(answers)

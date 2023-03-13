@@ -40,32 +40,26 @@ app.get('/api/departments', (req, res) => {
 
 // View all roles
 app.get('/api/roles', (req, res) => {
-    const sql = `SELECT id, role_title, role_salary, department_id AS role FROM roles`;
+    const sql = `SELECT id, role_title, role_salary, department_id FROM roles`;
 
     db.query(sql, (err, rows) => {
         if(err) {
             res.status(500).json({ err: err.message });
             return;
         }
-        res.json({
-            message: 'query successful',
-            data: rows
-        });
+        res.send(rows);
     });
 });
 // View all employees
 app.get('/api/employees', (req, res) => {
-    const sql = `SELECT id, first_name, last_name, role_id, manager_id AS employee FROM employees`;
+    const sql = `SELECT id, first_name, last_name, role_id, manager_id FROM employees`;
 
     db.query(sql, (err, rows) => {
         if(err) {
             res.status(500).json({ err: err.message });
             return;
         }
-        res.json({
-            message: 'query successful',
-            data: rows
-        });
+        res.send(rows);
     });
 });
 
@@ -106,7 +100,8 @@ app.post('/api/role', (req, res) => {
 // Add an employee
 app.post('/api/employee', (req, res) => {
     let userInput = req.body;
-    const sql = `INSERT INTO roles (first_name, last_name, role_id, manager_id) VALUES ("${userInput.firstName}", "${userInput.lastName}", "${userInput.roleId}")`;
+    const sql = `INSERT INTO employees (first_name, last_name, role_id) VALUES ("${userInput.firstName}", "${userInput.lastName}", "${userInput.roleId}")`;
+    console.log(sql);
 
     db.query(sql, (err, rows) => {
         if(err) {
