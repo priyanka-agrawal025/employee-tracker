@@ -66,7 +66,7 @@ app.get('/api/employees', (req, res) => {
 // Add a department
 app.post('/api/department', (req, res) => {
     const userInput = req.body;
-    const sql = `IF NOT EXISTS (SELECT 1 FROM departments WHERE department_name = "${userInput.department}") INSERT INTO departments (department_name) VALUES ("${userInput.department}")`;
+    const sql = `INSERT INTO departments (department_name) VALUES ("${userInput.department}")`;
 
     db.query(sql, (err, rows) => {
         if(err) {
